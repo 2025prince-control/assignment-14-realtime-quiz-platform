@@ -1,27 +1,30 @@
-# 🧠 Assignment 14: Real-Time Multiplayer Live Quiz Battle (Socket.io)
+# 🧠 Real-Time Multiplayer Live Quiz Battle (Socket.io)
 
 **Student Name:** Prince Yadav  
 **Student ID / Enrollment:** 150096725032  
-**Track:** Backend & Real-Time Web | **Level:** Advanced | **Estimated Time:** 7–9 Hours  
+**Track:** Backend & Real-Time Web  
 **Tech Stack:** Node.js, Express.js, Socket.io (4.x), In-Memory Game State Engine, CORS, Web Audio API  
 
 ---
 
 ## 📌 1. Project Overview & Architecture
 
-This project delivers a high-stakes, interactive **Real-Time Multiplayer Trivia & Quiz Battle Arena** (similar to Kahoot / Quizizz) built from scratch using **Node.js**, **Express.js**, and **Socket.io**. 
+This project delivers a high-stakes, interactive **Real-Time Multiplayer Trivia & Quiz Battle Arena** (similar to Kahoot / Quizizz) built using **Node.js**, **Express.js**, and **Socket.io**.
 
-The system features an **authoritative backend game engine** that synchronizes question countdown clocks across all connected devices, performs anti-cheat answer validation, computes millisecond speed-based score bonuses, and broadcasts live dynamic leaderboards round-by-round.
+The system features an **authoritative backend game engine** that synchronizes question countdown clocks across all connected participants, validates player submissions with speed-based score bonuses, prevents cheating, and broadcasts live dynamic leaderboards round-by-round.
 
-### 🌟 Key Capabilities
-- **Authoritative In-Memory Game Engine**: State machine (`LOBBY` ➔ `QUESTION` ➔ `TIME_UP` ➔ `LEADERBOARD` ➔ `ENDED`) preventing client-side clock drift.
-- **PIN-Based Multi-Room Management**: Dynamic 4-digit numeric room PIN generation, room isolation, and player roster management.
-- **Strict Anti-Cheat Server Validation**: Answers submitted after timer expiry are rejected server-side. Correct answers and explanations are stripped from question broadcast payloads to prevent client inspection.
-- **Millisecond Speed-Based Scoring**: Correct answers dynamically reward up to 1,000 points ($500 \text{ base} + \text{up to } 500 \text{ speed bonus}$) based on server-verified response speed.
-- **Dual Responsive Interfaces**:
-  - **Host Arena Dashboard (`host.html`)**: Big-screen Kahoot presentation view featuring large 4-digit PIN, live player roster chips, circular 15-second countdown timer, option response distribution bar charts, Top-3 podium, and victory confetti.
+### 🌟 Core Capabilities
+- **Authoritative In-Memory Game Engine**: State machine (`LOBBY` ➔ `QUESTION` ➔ `TIME_UP` ➔ `LEADERBOARD` ➔ `ENDED`) managing synchronized rounds without client-side clock drift.
+- **PIN-Based Multi-Room Management**: Dynamic 4-digit numeric room PIN generation, room isolation, and live player roster broadcasting (`lobby:update`).
+- **Strict Anti-Cheat Server Validation**:
+  - Answers submitted after the 15-second timer concludes are rejected server-side.
+  - `correctOption` and `explanation` are omitted from `question:start` broadcasts to prevent client inspection.
+  - Authoritative elapsed time calculation prevents clients from forging response speeds.
+- **Millisecond Speed-Based Scoring**: Correct answers dynamically reward up to 1,000 points ($500 \text{ base} + \text{up to } 500 \text{ speed bonus}$) based on server-verified reaction speed.
+- **Dual High-Fidelity Responsive Interfaces**:
+  - **Host Arena Dashboard (`host.html`)**: Big-screen Kahoot presentation view featuring large 4-digit PIN, live player roster chips, circular 15-second countdown timer, option response distribution bar chart, Top-3 podium, and victory confetti.
   - **Player Mobile Gamepad (`player.html`)**: Mobile-first 4-color geometric touch buttons (Red Triangle, Blue Diamond, Yellow Circle, Green Square), instant haptic feedback, speed badges, and personal round outcomes.
-- **Synthesized Audio Engine**: Browser-native Web Audio API synthesizer for countdown ticks, warning pulses, answer locks, chimes, and winner fanfares (no external MP3 asset failures).
+- **Synthesized Audio Engine**: Browser-native Web Audio API synthesizer for countdown ticks, warning pulses, answer locks, chimes, and winner fanfares.
 - **Automated CLI Verification Suite (`test-socket.js`)**: End-to-end multi-client simulation verifying PIN generation, scoring formulas, anti-cheat validation, and ranking sorting.
 
 ---
@@ -30,25 +33,29 @@ The system features an **authoritative backend game engine** that synchronizes q
 
 ```text
 assignment-14/
-├── .env                         # Server environment configuration (PORT=5000)
-├── .env.example                 # Template environment variables
-├── .gitignore                   # Ignores node_modules, .DS_Store, and logs
-├── package.json                 # Node dependencies and npm scripts
-├── package-lock.json            # Deterministic lockfile
-├── server.js                    # Express HTTP + Socket.io server entrypoint
-├── test-socket.js               # CLI automated multi-player test suite
-├── README.md                    # Comprehensive documentation and rubric mapping
-├── data/
-│   └── questions.json           # Categorized question bank (Node, Express, Web Protocols)
-├── sockets/
-│   ├── lobbyHandler.js          # Room PIN generation, player join/leave & roster updates
-│   └── gameEngine.js            # Timers, anti-cheat, speed scoring & leaderboard sorting
-├── public/
-│   ├── index.html               # Welcome portal (Host vs Player selection & quick join)
-│   ├── host.html                # Big-screen Kahoot presentation screen
-│   ├── player.html              # Mobile-friendly 4-color geometric gamepad
-│   └── app.js                   # Web Audio synthesizer, toasts, and confetti engine
-└── prince yadav 150096725032/    # Complete mirrored project submission folder
+├── .git/                        # Git repository
+├── .gitignore                   # Root gitignore
+├── README.md                    # Root project documentation
+└── prince yadav 150096725032/    # All Project Files
+    ├── .env                     # Server environment variables (PORT=5000)
+    ├── .env.example             # Template environment variables
+    ├── .gitignore               # Subfolder gitignore
+    ├── README.md                # Subfolder documentation
+    ├── package.json             # Dependencies and test scripts
+    ├── package-lock.json        # Deterministic lockfile
+    ├── node_modules/            # Installed npm packages
+    ├── server.js                # Express HTTP + Socket.io server entrypoint
+    ├── test-socket.js           # CLI automated multi-player test suite
+    ├── data/
+    │   └── questions.json       # Categorized trivia question bank
+    ├── sockets/
+    │   ├── lobbyHandler.js      # Room PIN generation, player join/leave & roster updates
+    │   └── gameEngine.js        # Timers, anti-cheat, speed scoring & leaderboard sorting
+    └── public/
+        ├── index.html           # Landing portal (Host vs Player selection & quick join)
+        ├── host.html            # Big-screen Kahoot presentation screen
+        ├── player.html          # Mobile-friendly 4-color geometric gamepad
+        └── app.js               # Web Audio synthesizer, toasts, and confetti engine
 ```
 
 ---
@@ -122,103 +129,143 @@ stateDiagram-v2
 
 ---
 
-## 🧮 5. Server-Side Scoring & Anti-Cheat Validation
+## 🌐 5. RESTful API Reference
 
-### Scoring Algorithm
-Points are awarded based on correctness and millisecond response speed:
+| Method | Endpoint | Description | Sample Response |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/health` | Service health, uptime, and active rooms count | `{"status":"healthy","uptimeSeconds":120,"activeRooms":1}` |
+| `GET` | `/api/rooms` | Inspect all active quiz rooms, host, and player count | `{"success":true,"count":1,"rooms":[{...}]}` |
+| `GET` | `/api/questions/meta`| Returns total question count and available categories | `{"totalQuestions":8,"categories":["Backend", ...]}` |
 
-$$\text{Score} = \begin{cases} 
-500 + \text{round}\left(\frac{\max(0, \text{TotalTimeLimitMs} - \text{TimeTakenMs})}{\text{TotalTimeLimitMs}} \times 500\right), & \text{if Correct} \\
-0, & \text{if Incorrect}
-\end{cases}$$
+---
+
+## 🧮 6. Server-Side Scoring & Anti-Cheat Validation
+
+### Dynamic Speed-Based Scoring Algorithm
+```javascript
+// Score = Base (500) + Speed Bonus (up to 500)
+function calculateScore(isCorrect, timeTakenMs, totalTimeLimitMs = 15000) {
+  if (!isCorrect) return 0;
+  
+  const timeRemaining = Math.max(0, totalTimeLimitMs - timeTakenMs);
+  const speedBonus = Math.round((timeRemaining / totalTimeLimitMs) * 500);
+  const baseScore = 500;
+  
+  return baseScore + speedBonus; // Total max 1000 points per question
+}
+```
 
 - **Instant Correct Answer ($0\text{ ms}$)**: $500 + 500 = \mathbf{1,000 \text{ points}}$ (Max per question)
 - **Mid-Speed Correct Answer ($7,500\text{ ms}$)**: $500 + 250 = \mathbf{750 \text{ points}}$
 - **Slow Correct Answer ($15,000\text{ ms}$)**: $500 + 0 = \mathbf{500 \text{ points}}$
 - **Incorrect Answer**: $\mathbf{0 \text{ points}}$
 
-### Anti-Cheat Enforcement
-1. **Server-Authoritative Clock**: The server stores `roundStartTime = Date.now()`. When a submission arrives, the server checks elapsed time:
+### Anti-Cheat Protections
+1. **Server Timestamp Tracking**: The server stores `roundStartTime = Date.now()`. When a submission arrives, elapsed time is computed server-side:
    $$\text{serverElapsedMs} = \text{Date.now()} - \text{roundStartTime}$$
-2. **Timer Expiry Rejection**: Submissions received after $\text{timeLimit} + 500\text{ms}$ network grace period are immediately rejected with `answer:rejected`.
-3. **Anti-Spoofing Time Delta**: The server prevents clients from spoofing `{ timeTakenMs: 1 }` by verifying against the true server-measured latency.
-4. **Duplicate Submission Shield**: Only one answer submission is permitted per socket per question round. Subsequent attempts are rejected.
-5. **Information Hiding**: `correctOption` and `explanation` are withheld from `question:start` and are only released when `question:time_up` triggers.
+2. **Timer Expiry Enforcement**: Submissions received after $\text{timeLimit} + 500\text{ms}$ network grace period are rejected with `answer:rejected`.
+3. **Anti-Spoofing Time Delta**: Verified elapsed time is used for scoring to prevent clients from forging `{ timeTakenMs: 1 }`.
+4. **Duplicate Submission Shield**: Only one answer submission is permitted per socket per question round.
+5. **Information Hiding**: Correct options and explanations are never sent during question broadcast.
 
 ---
 
-## 🚀 6. Installation & Quickstart
+## 🚀 7. Local Setup & Execution
 
 ### Prerequisites
 - **Node.js** (v18 or higher recommended)
 - **npm** (v9 or higher)
 
-### Setup Instructions
+### Installation & Run
 ```bash
-# 1. Navigate to the project directory
-cd "/Users/prince/Desktop/assignment 14"
+# 1. Navigate to the project folder
+cd "prince yadav 150096725032"
 
 # 2. Install dependencies
 npm install
 
-# 3. Configure environment variables (Default PORT=5000)
-cp .env.example .env
-
-# 4. Start the server
+# 3. Start the server
 npm start
-# Alternatively for auto-reloading during development:
+
+# Or with automatic reload during development:
 npm run dev
 ```
 
-*Note: On macOS systems where port 5000 is occupied by AirPlay Receiver, the server automatically and gracefully falls back to port 5001.*
+The server listens on `PORT` (default `5000`, with automatic fallback to `5001` if macOS AirPlay Receiver is active).
 
 ---
 
-## 🧪 7. Verification & Testing
+## 🌐 8. Deploying to Render
 
-### Automated CLI Test Suite
-Run the automated end-to-end multiplayer test suite:
+1. Go to [dashboard.render.com](https://dashboard.render.com/) and create a **New Web Service**.
+2. Connect your GitHub repository: `itm-assignment-14-quiz-socket`.
+3. Configure the build parameters:
+   - **Root Directory:** `prince yadav 150096725032`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start` *(or `node server.js`)*
+4. Under **Environment Variables**, add:
+   - `PORT` = `10000`
+   - `NODE_ENV` = `production`
+
+---
+
+## 🧪 9. Automated Testing Suite
+
+Execute the standalone end-to-end test suite from within `prince yadav 150096725032`:
 ```bash
 npm test
 ```
-The test suite validates:
-- Scoring formula boundary conditions ($1000$, $750$, $500$, $0$).
-- Host room creation and 4-digit PIN generation.
-- Multi-client connection and roster broadcast.
-- Anti-cheat question stripping (`correctOption === undefined`).
-- Response speed delta verification ($Score_{P1} > Score_{P2} > Score_{P3}$).
-- Anti-cheat rejection of late answers after timer expiration.
-- Leaderboard ranking sorting and point aggregation.
 
-### Manual Multi-Tab Verification Guide
-1. Start the server on `http://localhost:5000` (or fallback `http://localhost:5001`).
-2. **Tab 1 (Host)**: Open `http://localhost:5000/host.html`. Click **"⚡ Initialize Arena Room"** and note the generated 4-digit PIN (e.g. `8421`).
-3. **Tab 2 (Player 1)**: Open `http://localhost:5000/player.html`. Enter PIN and join as **"Player 1"**.
-4. **Tab 3 (Player 2)**: Open `http://localhost:5000/player.html` in an Incognito window. Enter PIN and join as **"Player 2"**.
-5. Observe the Host lobby screen displaying both players in real-time.
-6. Click **"🚀 Start Quiz Battle"** on the Host screen.
-7. Answer immediately on **Player 1**, and wait 8 seconds before answering on **Player 2**.
-8. Verify that Player 1 receives a higher score due to faster speed bonus.
-9. Verify neither player can submit after the 15-second countdown expires.
-10. Watch the podium animation and winner confetti!
+### Test Suite Execution Output:
+```text
+===============================================================
+🧪 RUNNING ASSIGNMENT 14 SOCKET.IO MULTIPLAYER TEST SUITE
+===============================================================
+
+[TEST SERVER] Running on http://localhost:5055
+▶ [TEST 1] Verifying Server-Side Scoring Algorithm Formula...
+  ✔ Scoring formula passed: 1000 max, 750 mid, 500 slow, 0 wrong.
+
+▶ [TEST 2] Host creates room (quiz:create) and obtains PIN...
+[LOBBY] Room created: PIN 4982 by Host 'Professor X'
+  ✔ Host created room successfully with 4-digit PIN: 4982
+
+▶ [TEST 3] Connecting 3 Players (Player 1, Player 2, Player 3)...
+[LOBBY] Player 'Karan (Speed Demon)' joined room PIN 4982
+[LOBBY] Player 'Aman (Careful)' joined room PIN 4982
+[LOBBY] Player 'Rohan (Wrong)' joined room PIN 4982
+  ✔ All 3 players joined. Lobby updated with: Karan (Speed Demon), Aman (Careful), Rohan (Wrong)
+
+▶ [TEST 4] Host starts quiz; verifying anti-cheat question payload...
+[GAME] Host started quiz for room PIN 4982 with 3 players
+[GAME] Room PIN 4982 -> Question 1/4
+  ✔ Server broadcasted question without revealing correct answer to clients!
+
+▶ [TEST 5] Submitting answers at different speeds and correctness...
+[GAME] Room PIN 4982 -> Time is up for Question 1
+  📊 Player 1 (Fast) Score: 997 pts
+  📊 Player 2 (Slow) Score: 977 pts
+  📊 Player 3 (Wrong) Score: 0 pts
+  ✔ Speed-based dynamic scoring verified successfully!
+
+▶ [TEST 6] Testing Anti-Cheat rejection after timer expiry...
+  ✔ Anti-Cheat rejected late submission: "No active question round accepting submissions."
+
+▶ [TEST 7] Verifying live leaderboard ranking...
+[GAME] Room PIN 4982 -> Broadcasting Leaderboard: 1. Karan (Speed Demon) (997), 2. Aman (Careful) (977), 3. Rohan (Wrong) (0)
+  ✔ Dynamic leaderboard correctly calculated and sorted:
+      #1 Karan (Speed Demon) - 997 pts
+     #2 Aman (Careful) - 977 pts
+     #3 Rohan (Wrong) - 0 pts
+
+===============================================================
+🎉 ALL ASSIGNMENT 14 TEST SUITES PASSED FLAWLESSLY!
+===============================================================
+```
 
 ---
 
-## 📊 8. Grading Rubric Compliance (100 Marks)
-
-| Evaluation Component | Marks | Implementation Details |
-| :--- | :---: | :--- |
-| **Lobby & PIN-Based Multi-Player Room Management** | **25 / 25** | Authoritative in-memory room store, unique 4-digit PIN generation, duplicate nickname prevention, dynamic roster broadcast (`lobby:update`), host and player disconnection handling. |
-| **Server-Controlled Synchronous Question Clocks & Timers** | **25 / 25** | Server-authoritative 15-second timers without client drift, early round conclusion when all players answer, automated round transitions (`question:start` ➔ `question:time_up` ➔ `leaderboard:update` ➔ `quiz:ended`). |
-| **Speed-Based Dynamic Scoring & Anti-Cheat Validation** | **20 / 20** | $500 \text{ base} + \text{up to } 500 \text{ speed bonus}$ calculation, server timestamp validation, late submission rejection (`answer:rejected`), stripped answers in question payloads. |
-| **Real-Time Leaderboard Sorting & Rank Calculation** | **15 / 15** | Dynamic score aggregation, streak tracking (`🔥 X in a row`), descending leaderboard sort with tie-breaking, podium calculations. |
-| **Dual Interface Polish (Host Dashboard & Player Game Pad)** | **15 / 15** | Glassmorphism UI, 4-color Kahoot geometric shapes, circular SVG countdown clock, distribution bar chart, Web Audio synthesizer sound effects, and canvas confetti. |
-| **Total Marks** | **100 / 100** | Full compliance with all requirements. |
-
----
-
-## 👤 Author Information
-- **Student Name:** Prince Yadav
-- **Enrollment Number:** 150096725032
-- **Institution:** ITM University
-- **Assignment:** Assignment 14 - Real-Time Multiplayer Live Quiz Battle (Socket.io)
+## 👨‍💻 Student Information
+- **Name:** Prince Yadav
+- **Student ID:** 150096725032
+- **GitHub Repository:** itm-assignment-14-quiz-socket
