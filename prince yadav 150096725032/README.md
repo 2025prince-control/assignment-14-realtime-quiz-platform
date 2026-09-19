@@ -2,6 +2,8 @@
 
 **Student Name:** Prince Yadav  
 **Student ID / Enrollment:** 150096725032  
+**Live Render Deployment:** [https://assignment-14-realtime-quiz-platform-9912.onrender.com](https://assignment-14-realtime-quiz-platform-9912.onrender.com)  
+**GitHub Repository:** [https://github.com/2025prince-control/assignment-14-realtime-quiz-platform](https://github.com/2025prince-control/assignment-14-realtime-quiz-platform)  
 **Track:** Backend & Real-Time Web  
 **Tech Stack:** Node.js, Express.js, Socket.io (4.x), In-Memory Game State Engine, CORS, Web Audio API  
 
@@ -197,12 +199,17 @@ The server listens on `PORT` (default `5000`, with automatic fallback to `5001` 
 
 ## 🌐 8. Deploying to Render
 
+- **Live Deployment URL:** [https://assignment-14-realtime-quiz-platform-9912.onrender.com](https://assignment-14-realtime-quiz-platform-9912.onrender.com)
+- **Host View:** [https://assignment-14-realtime-quiz-platform-9912.onrender.com/host.html](https://assignment-14-realtime-quiz-platform-9912.onrender.com/host.html)
+- **Player View:** [https://assignment-14-realtime-quiz-platform-9912.onrender.com/player.html](https://assignment-14-realtime-quiz-platform-9912.onrender.com/player.html)
+
+### Render Deployment Configuration:
 1. Go to [dashboard.render.com](https://dashboard.render.com/) and create a **New Web Service**.
-2. Connect your GitHub repository: `itm-assignment-14-quiz-socket`.
+2. Connect your GitHub repository: `2025prince-control/assignment-14-realtime-quiz-platform`.
 3. Configure the build parameters:
    - **Root Directory:** `prince yadav 150096725032`
    - **Build Command:** `npm install`
-   - **Start Command:** `npm start` *(or `node server.js`)*
+   - **Start Command:** `npm start`
 4. Under **Environment Variables**, add:
    - `PORT` = `10000`
    - `NODE_ENV` = `production`
@@ -268,4 +275,5 @@ npm test
 ## 👨‍💻 Student Information
 - **Name:** Prince Yadav
 - **Student ID:** 150096725032
-- **GitHub Repository:** itm-assignment-14-quiz-socket
+- **Live Deployment:** [https://assignment-14-realtime-quiz-platform-9912.onrender.com](https://assignment-14-realtime-quiz-platform-9912.onrender.com)
+- **GitHub Repository:** [https://github.com/2025prince-control/assignment-14-realtime-quiz-platform](https://github.com/2025prince-control/assignment-14-realtime-quiz-platform)
